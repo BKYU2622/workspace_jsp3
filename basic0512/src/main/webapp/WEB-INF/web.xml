@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd" id="WebApp_ID" version="4.0">
+  <display-name>basic0512</display-name>
+ <context-param>
+  	<param-name>log4jConfigLocation</param-name>
+  	<param-value>WEB-INF/classes/log4j.properties</param-value> 
+  </context-param>
+  <servlet>
+  <servlet-name>FrontMVC1</servlet-name>
+  <servlet-class>com.example.demo.pojo1.FrontMVC</servlet-class>
+  </servlet>
+  <servlet-mapping>
+  	<servlet-name>FrontMVC1</servlet-name>
+ 	 <url-pattern>*.pj1</url-pattern>
+  </servlet-mapping>
+   <servlet>
+  <servlet-name>FrontMVC2</servlet-name>
+  <servlet-class>com.example.demo.pojo2.ActionServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+  	<servlet-name>FrontMVC2</servlet-name>
+ 	 <url-pattern>*.pj2</url-pattern>
+  </servlet-mapping>
+     <servlet>
+  <servlet-name>KakaoAPI</servlet-name>
+  <servlet-class>com.example.demo.pojo3.KakaoSupport</servlet-class>
+  </servlet>
+  <servlet-mapping>
+  	<servlet-name>KakaoAPI</servlet-name>
+ 	 <url-pattern>/auth/*</url-pattern>
+  </servlet-mapping>
+</web-app>

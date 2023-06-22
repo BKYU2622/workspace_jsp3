@@ -1,0 +1,123 @@
+package com.example.demo.member;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.log4j.Logger;
+
+import com.util.HashMapBinder;
+
+/*
+   개발자 입장에서 보면 get방이든 post방식이든 처리를 해주어야 하는 것은 같다
+ */
+
+
+
+@SuppressWarnings("serial")
+@WebServlet("/member/memberCRUD")
+public class MemberServlet extends HttpServlet {
+    Logger logger = Logger.getLogger(MemberServlet.class);
+    MemberDao memberDao = new MemberDao();
+    /*
+       회원(CRUD)관리 구형
+       URL: 업무명(폴더명) - member
+            호출이름 - memberCRUD
+       쿼리스트링(조회):?method=memeberSelect
+       select mem_no, mem_id, mem_pw, mem_name from member0518;
+       where mem_no=? -> 메서드의 파라미터 자리에 온 값(타입)이다. 
+       
+       쿼리스트링(등록):?method=memeberInsert
+       insert into member0518(mem_no,mem_id, mem_pw, mem_name) values(1, 'tomato', '123', '이순신');
+       
+       쿼리스트링(수정):?method=memeberUpdate
+       update member0518
+         set mem_name = '토마토'
+       where mem_no = 1;
+       
+       쿼리스트링(삭제):?method=memeberDelete
+       delete from member0518 
+       where mem_no =:x
+            
+     */
+     // get방식으로 요청을 받든, 아니면 post방식으로 요청을 받든 메서드를 하나로 통일하자
+     // 메서드 오버라이딩을 이용하지 않고 사용자 정의 메서드를 추가하여 처리를 해본다
+     // 파라미터로 주입받는 요청객체와 응답객체를 다른 메서드에 넘길 수 있다
+    
+    public void doService(HttpServletRequest req, HttpServletResponse resp) {
+    	// 아래 실행문은 실행 기회를 갖지 못한다.
+    	req.getParameter("mem_id");
+    }
+    
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+       List<Map<String,Object>> mList = null;
+       int result = -1;
+       String methodName = req.getParameter("method"); // memeberSelect or memeberInsert or memeberUpdate or memeberDelete
+       // 리턴타입과 파라미터 결정
+       HashMap<String, Object> pMap = new HashMap<>();
+       HashMapBinder hmb = new HashMapBinder(req);
+       hmb.bind(pMap);
+       
+       // 회원 조회
+       if("memberSelect".equals(methodName)) { // 조건 검색 경우라면 사용자가 입력한 정보가 필요
+    	   logger.info("memberSelect");
+    	   // 여기에서는 mList가 null참조하는 상황
+    	   logger.info("before: " + mList); // 아무것도 없음{}[]
+    	   mList = memberDao.memberSelect(); // 이 메서드 안에서 오라클 서버 경유한 경우라면 더 이상이 null이 아님
+    	   // [] - List -> ArrayList{List는 인터페이스이고 ArrayList는 구현체 클래스임}
+    	   // {} - Map<String, Object>
+    	   logger.info("after: " + mList); // [{}, {}, {}, {}] - 객체배열 형태임
+    	   
+       // 회원 등록	   
+       // 사용자가 입력한 값을 파리미터를 통해서 넘겨야 한다
+       // 쿼리문을 작성한 이유는 없지만 쿼리문을 보고 사용자가 입력한 정보를
+       }else if("memberInsert".equals(methodName)) {
+    	   result = memberDao.memberInsert(pMap);
+    	   
+       // 회원 수정  
+       }else if("memberUpdate".equals(methodName)) {
+    	   result = memberDao.memberUpdate(pMap);
+    	   
+       // 회원 삭제
+       // DELETE FROM member0518 WHERE mem_no=:x 숫자타입 number(5)
+       }else if("memberDelete".equals(methodName)) {
+       // 사용자가 선택한 회원일련번호
+    	   String mem_no = req.getParameter("mem_no"); // 문자열로 출력
+    	   int user_no = 0;
+    	   user_no = Integer.parseInt(mem_no); 
+    	   logger.info("사용자가 삭제를 선택한 회원 일련번호 - " + user_no);
+           result = memberDao.memberDelete(user_no);
+           
+       }// end of 회원 삭제
+       // mList = memberDao.memberList(); - CRUD를 조건문으로 분기하면서 memberSelect영역으로 이관했음
+       req.setAttribute("mList", mList);
+       RequestDispatcher view = req.getRequestDispatcher("memberList.jsp");
+       view.forward(req, resp);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("application/json;charset=utf-8");
+    	// 메서드로 객체생성을 할 수 있다 = 잘하는 사람
+    	// if문을 쓸 수 있음, 조건에 따라서 객체생성을 할 수 있어서 다름
+    	// 이미 주소번지가 가리키는 객체가 있으면 새로 인스턴스화하지 않을 것 -> 싱글톤 패턴
+    	// 주의: JSON 유사품에 주의할 것
+        PrintWriter out = resp.getWriter();
+        out.print("[{mem_id:'tomato', mem_name:'토마토'},{mem_id:'apple', mem_name:'사과'},{mem_id:'kiwi', mem_name:'키위'}]");
+     
+    	
+    }
+    
+    
+}
+

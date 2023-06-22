@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mybatis.mapper.memberMapper">
+<!-- id값과 메소드이름과 화면이름  일치 -->
+	<insert id="memberInsert" parameterType="map">
+		INSERT INTO member0518(mem_no, mem_id, mem_name, mem_pw)
+		VALUES(seq_member0518.nextval, #{mem_id},#{mem_name},#{mem_pw})
+	</insert>
+	<update id="memberUpdate" parameterType="map">
+		UPDATE member0518
+		       SET mem_id = #{mem_id}
+		            ,  mem_pw = #{mem_pw}
+		            ,  mem_name = #{mem_name}
+		<where>
+			<if test='mem_no !=null'>
+		        AND mem_no = #{mem_no} 
+			</if>
+		</where>	   
+	</update>
+	<delete id="memberDelete" parameterType="map">
+		DELETE FROM member0518
+		<where>
+			<if test='mem_no !=null'>
+		        AND mem_no = #{mem_no}
+			</if>
+		</where>	 		
+	</delete>
+	<select id="memberList" resultType="map" parameterType="java.util.Map">
+		SELECT 
+		            mem_no, mem_id, mem_name, mem_zipcode, mem_address, mem_pw
+		   FROM member0518
+		<where>
+			<if test='mem_no !=null'>
+		        AND mem_no = #{mem_no} 
+			</if>
+			<if test='mem_name !=null'>
+		        AND mem_name LIKE #{mem_name}||'%' 
+			</if>
+		</where>	
+	</select>
+	<select id="zipcodeList" parameterType="map" resultType="map">
+		SELECT zipcode, address
+		FROM zipcode_t
+		<where>
+			<if test='dong !=null'>
+		        AND dong LIKE #{dong}||'%' <!-- pMap.get("dong") -->
+			</if>
+		</where>
+		ORDER BY zipcode desc
+	</select>
+</mapper>

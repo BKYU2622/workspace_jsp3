@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mybatis.mapper.qnaMapper">
+	<update id="noticeUpdate" parameterType="map">
+		UPDATE 	notice230527
+		SET
+			n_writer = #{n_writer},
+			n_title = #{n_title},
+			n_content = #{n_content},
+			n_date = TO_CHAR(SYSDATE, 'YYYY-MM-DD HH24:MI:SS')
+		WHERE 
+			n_no = #{n_no}
+	</update>
+	<delete id="noticeDelete" parameterType="map">
+		delete from notice230527 where n_no=#{n_no}
+	</delete>
+	
+	<select id="noticeList" parameterType="java.util.HashMap" resultType="map">
+		SELECT
+		        n_no, n_writer, n_title, n_content, n_date
+		  FROM notice230527
+		<where>
+			<if test="n_no!=null">AND n_no=#{n_no}</if>		
+			<if test="gubun!=null">
+				<choose>
+					<when test='gubun.equals("n_title")'>
+						AND (n_title LIKE '%'||#{keyword}||'%')
+					</when>
+					<when test='gubun.equals("n_writer")'>
+						AND (n_writer LIKE '%'||#{keyword}||'%')
+					</when>
+					<when test='gubun.equals("n_content")'>
+						AND (n_content LIKE '%'||#{keyword}||'%')
+					</when>
+				</choose>
+			</if>			
+		</where>
+		ORDER BY n_no desc
+	</select>	 	
+
+	<insert id="noticeInsert" parameterType="map" >
+		INSERT INTO notice230527(n_no, n_writer , n_title ,n_content , n_date) 
+		              VALUES(seq_notice230527_no.nextval
+		                           ,#{n_writer},#{n_title},#{n_content}
+		                          , TO_CHAR(SYSDATE, 'YYYY-MM-DD HH24:MI:SS'))
+	</insert>
+	
+</mapper>

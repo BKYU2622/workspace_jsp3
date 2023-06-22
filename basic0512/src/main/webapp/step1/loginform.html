@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        const loginAction = () => {
+            console.log("loginAction 호출 성공")
+            document.querySelector("#f_login").submit();
+        } 
+    </script>
+</head>
+<body>
+    <form id="f_login" method="get" action="/step1/hello">
+        <input type="text" name="mem_id">
+        <br>
+        <input type="text" name="mem_pw">
+        <input type="button" value="로그인" onclick="loginAction()">
+    </form>
+</body>
+</html>
